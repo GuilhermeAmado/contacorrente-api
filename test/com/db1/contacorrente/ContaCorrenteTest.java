@@ -115,4 +115,79 @@ public class ContaCorrenteTest {
         Assert.assertEquals("Depositado: R$ 100.0", contaCorrente.getHistorico().get(0));
     }
 
+    // testes para saque
+    @Test
+    public void deveRetornarErroQuandoValorSacadoInvalido() {
+        ContaCorrente contaCorrente = new ContaCorrente("0465", "02487532", "Guilherme Amado");
+        String mensagem = null;
+
+        try {
+            contaCorrente.sacar(-0.01);
+        } catch (RuntimeException e) {
+            mensagem = e.getMessage();
+        }
+
+        Assert.assertEquals("Valor a ser sacado deve ser maior que zero", mensagem);
+        Assert.assertEquals(0.0, contaCorrente.getSaldo(), 0.0001);
+        Assert.assertEquals(0, contaCorrente.getHistorico().size());
+    }
+
+    @Test
+    public void deveRetornarErroQuandoValorSacadoForZero() {
+        ContaCorrente contaCorrente = new ContaCorrente("0465", "02487532", "Guilherme Amado");
+        String mensagem = null;
+
+        try {
+            contaCorrente.sacar(0.0);
+        } catch (RuntimeException e) {
+            mensagem = e.getMessage();
+        }
+
+        Assert.assertEquals("Valor a ser sacado deve ser maior que zero", mensagem);
+        Assert.assertEquals(0.0, contaCorrente.getSaldo(), 0.0001);
+        Assert.assertEquals(0, contaCorrente.getHistorico().size());
+    }
+
+    @Test
+    public void deveRetornarErroQuandoValorSacadoForNull() {
+        ContaCorrente contaCorrente = new ContaCorrente("0465", "02487532", "Guilherme Amado");
+        String mensagem = null;
+
+        try {
+            contaCorrente.sacar(null);
+        } catch (RuntimeException e) {
+            mensagem = e.getMessage();
+        }
+
+        Assert.assertEquals("Valor a ser sacado deve ser maior que zero", mensagem);
+        Assert.assertEquals(0.0, contaCorrente.getSaldo(), 0.0001);
+        Assert.assertEquals(0, contaCorrente.getHistorico().size());
+    }
+
+    @Test
+    public void deveRetornarErroQuandoValorSacadoForMaiorQueSaldo() {
+        ContaCorrente contaCorrente = new ContaCorrente("0465", "02487532", "Guilherme Amado");
+        String mensagem = null;
+
+        try {
+            contaCorrente.sacar(30.0);
+        } catch (RuntimeException e) {
+            mensagem = e.getMessage();
+        }
+
+        Assert.assertEquals("Valor a ser sacado é maior do que disponível em conta", mensagem);
+        Assert.assertEquals(0.0, contaCorrente.getSaldo(), 0.0001);
+        Assert.assertEquals(0, contaCorrente.getHistorico().size());
+    }
+
+    @Test
+    public void deveSacarValor() {
+        ContaCorrente contaCorrente = new ContaCorrente("0465", "02487532", "Guilherme Amado");
+        contaCorrente.depositar(100.0);
+        contaCorrente.sacar(30.0);
+
+        Assert.assertEquals(70.0, contaCorrente.getSaldo(), 0.001);
+        Assert.assertEquals("Depositado: R$ 100.0", contaCorrente.getHistorico().get(0));
+        Assert.assertEquals("Sacado: R$ 30.0", contaCorrente.getHistorico().get(1));
+    }
 }
